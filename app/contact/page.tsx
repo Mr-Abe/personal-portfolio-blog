@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import { submitContactForm } from '../actions/contact';
 
 export default function ContactPage() {
   const [formData, setFormData] = useState({
@@ -9,18 +10,55 @@ export default function ContactPage() {
     subject: '',
     message: '',
   });
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    // TODO: Implement form submission to Supabase
-    console.log('Form submitted:', formData);
-  };
+  const [status, setStatus] = useState<{
+    type: 'success' | 'error' | null;
+    message: string | null;
+  }>({
+    type: null,
+    message: null,
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    setStatus({ type: null, message: null });
+
+    try {
+      const result = await submitContactForm(formData);
+
+      if (result.success) {
+        setStatus({
+          type: 'success',
+          message: 'Thank you for your message! I will get back to you soon.',
+        });
+        setFormData({
+          name: '',
+          email: '',
+          subject: '',
+          message: '',
+        });
+      } else {
+        setStatus({
+          type: 'error',
+          message: result.error || 'Something went wrong. Please try again.',
+        });
+      }
+    } catch (error) {
+      setStatus({
+        type: 'error',
+        message: 'Something went wrong. Please try again.',
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -123,12 +161,27 @@ export default function ContactPage() {
               </div>
             </div>
 
+            {status.message && (
+              <div
+                className={`rounded-md p-4 ${
+                  status.type === 'success'
+                    ? 'bg-green-50 text-green-700 dark:bg-green-900/50 dark:text-green-300'
+                    : 'bg-red-50 text-red-700 dark:bg-red-900/50 dark:text-red-300'
+                }`}
+              >
+                {status.message}
+              </div>
+            )}
+
             <div>
               <button
                 type="submit"
-                className="rounded-md bg-indigo-600 px-3.5 py-2.5 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 dark:hover:bg-indigo-700"
+                disabled={isSubmitting}
+                className={`flex w-full justify-center rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 dark:hover:bg-indigo-700 ${
+                  isSubmitting && 'opacity-50 cursor-not-allowed'
+                }`}
               >
-                Send Message
+                {isSubmitting ? 'Sending...' : 'Send Message'}
               </button>
             </div>
           </form>

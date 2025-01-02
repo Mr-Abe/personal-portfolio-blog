@@ -1,7 +1,39 @@
 import Image from 'next/image';
 import Link from 'next/link';
+import { getProjects } from './actions/projects';
+import ProjectList from './components/projects/ProjectList';
 
-export default function Home() {
+const codePreview = `// Example from Medical Data Analytics Dashboard
+import { useEffect, useState } from 'react';
+import { LineChart, Line, XAxis, YAxis, Tooltip } from 'recharts';
+
+export function VitalSignsChart({ patientId }) {
+  const [data, setData] = useState([]);
+
+  useEffect(() => {
+    // Fetch patient's vital signs data
+    async function fetchData() {
+      const response = await fetch(\`/api/vitals/\${patientId}\`);
+      const vitalSigns = await response.json();
+      setData(vitalSigns);
+    }
+    fetchData();
+  }, [patientId]);
+
+  return (
+    <LineChart width={600} height={300} data={data}>
+      <XAxis dataKey="timestamp" />
+      <YAxis />
+      <Tooltip />
+      <Line type="monotone" dataKey="heartRate" stroke="#8884d8" />
+      <Line type="monotone" dataKey="bloodPressure" stroke="#82ca9d" />
+    </LineChart>
+  );
+}`;
+
+export default async function Home() {
+  const result = await getProjects({ featured: true });
+
   return (
     <div className="space-y-16">
       {/* Hero Section */}
@@ -42,21 +74,14 @@ export default function Home() {
                       <div className="flex bg-gray-800/40 ring-1 ring-white/5">
                         <div className="-mb-px flex text-sm font-medium leading-6 text-gray-400">
                           <div className="border-b border-r border-b-white/20 border-r-white/10 bg-white/5 px-4 py-2 text-white">
-                            Portfolio Preview
+                            Featured Project Preview
                           </div>
                         </div>
                       </div>
                       <div className="px-6 pb-14 pt-6">
-                        {/* Placeholder for code preview or project showcase */}
                         <div className="text-gray-300">
                           <pre className="text-sm">
-                            <code>{`function HelloWorld() {
-  return (
-    <div>
-      Welcome to my portfolio!
-    </div>
-  );
-}`}</code>
+                            <code>{codePreview}</code>
                           </pre>
                         </div>
                       </div>
@@ -80,34 +105,9 @@ export default function Home() {
           </p>
         </div>
         
-        {/* Project Grid Placeholder - To be populated with actual projects */}
-        <div className="mx-auto mt-16 grid max-w-2xl grid-cols-1 gap-x-8 gap-y-20 lg:mx-0 lg:max-w-none lg:grid-cols-3">
-          {[1, 2, 3].map((i) => (
-            <article key={i} className="flex flex-col items-start">
-              <div className="relative w-full">
-                <div className="aspect-[16/9] w-full bg-gray-100 dark:bg-gray-800 rounded-2xl" />
-              </div>
-              <div className="max-w-xl">
-                <div className="mt-8 flex items-center gap-x-4 text-xs">
-                  <time dateTime="2024-01" className="text-gray-500">
-                    January 2024
-                  </time>
-                  <span className="relative z-10 rounded-full bg-gray-50 dark:bg-gray-700 px-3 py-1.5 font-medium text-gray-600 dark:text-gray-300">
-                    Web Development
-                  </span>
-                </div>
-                <div className="group relative">
-                  <h3 className="mt-3 text-lg font-semibold leading-6 text-gray-900 dark:text-white">
-                    <span className="absolute inset-0" />
-                    Project {i}
-                  </h3>
-                  <p className="mt-5 text-sm leading-6 text-gray-600 dark:text-gray-300">
-                    A brief description of this amazing project and the problems it solves.
-                  </p>
-                </div>
-              </div>
-            </article>
-          ))}
+        {/* Project Grid */}
+        <div className="mx-auto mt-16">
+          <ProjectList projects={result.success ? result.data || [] : []} />
         </div>
       </div>
     </div>

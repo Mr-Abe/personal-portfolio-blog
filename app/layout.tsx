@@ -3,6 +3,7 @@ import { Inter } from 'next/font/google';
 import './styles/globals.css';
 import { Analytics } from '@vercel/analytics/react';
 import Navigation from './components/Navigation';
+import { AuthProvider } from './lib/auth/AuthContext';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -18,14 +19,29 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className="h-full">
-      <body className={`${inter.className} bg-white dark:bg-gray-900 h-full`}>
-        <div className="min-h-full">
-          <Navigation />
-          <main className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-            {children}
-          </main>
-        </div>
-        <Analytics />
+      <body
+        className={`${inter.className} bg-white dark:bg-gray-900 h-full`}
+        suppressHydrationWarning={true}
+      >
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              const isDarkMode = localStorage.getItem('darkMode') === 'true';
+              if (isDarkMode) {
+                document.documentElement.classList.add('dark');
+              }
+            `,
+          }}
+        />
+        <AuthProvider>
+          <div className="min-h-full">
+            <Navigation />
+            <main className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+              {children}
+            </main>
+          </div>
+          <Analytics />
+        </AuthProvider>
       </body>
     </html>
   );
