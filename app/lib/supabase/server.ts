@@ -8,9 +8,9 @@ export function createClient() {
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
       cookies: {
-        get(name: string) {
-          // @ts-expect-error - Next.js cookies() has wrong types
-          return cookies().get(name)?.value ?? '';
+        async get(name: string) {
+          const cookieStore = await cookies();
+          return cookieStore.get(name)?.value ?? '';
         },
         set(name: string, value: string, options: CookieOptions) {
           // @ts-expect-error - Next.js cookies() has wrong types
