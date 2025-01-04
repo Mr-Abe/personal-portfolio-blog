@@ -24,7 +24,7 @@ export async function submitContactForm(formData: Omit<ContactMessage, 'id' | 'r
     };
   }
 
-  const supabase = createClient();
+  const supabase = await createClient();
 
   try {
     const { data, error } = await supabase

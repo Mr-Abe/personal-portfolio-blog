@@ -85,45 +85,48 @@ export interface Database {
       projects: {
         Row: {
           id: string
-          created_at: string
-          updated_at: string
           title: string
           slug: string
           description: string
-          content: string
-          technologies: string[]
+          content: string | null
+          image_url: string | null
           github_url: string | null
-          live_url: string | null
-          cover_image: string | null
+          demo_url: string | null
+          technologies: string[] | null
           featured: boolean
+          category: string | null
+          created_at: string
+          updated_at: string
         }
         Insert: {
           id?: string
-          created_at?: string
-          updated_at?: string
           title: string
           slug: string
           description: string
-          content: string
-          technologies?: string[]
+          content?: string | null
+          image_url?: string | null
           github_url?: string | null
-          live_url?: string | null
-          cover_image?: string | null
+          demo_url?: string | null
+          technologies?: string[] | null
           featured?: boolean
+          category?: string | null
+          created_at?: string
+          updated_at?: string
         }
         Update: {
           id?: string
-          created_at?: string
-          updated_at?: string
           title?: string
           slug?: string
           description?: string
-          content?: string
-          technologies?: string[]
+          content?: string | null
+          image_url?: string | null
           github_url?: string | null
-          live_url?: string | null
-          cover_image?: string | null
+          demo_url?: string | null
+          technologies?: string[] | null
           featured?: boolean
+          category?: string | null
+          created_at?: string
+          updated_at?: string
         }
       }
       contact_messages: {

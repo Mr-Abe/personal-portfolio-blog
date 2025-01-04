@@ -5,6 +5,7 @@ import { useAuth } from '@/app/lib/auth/AuthContext';
 import { BlogPost } from '@/app/lib/types';
 import dynamic from 'next/dynamic';
 import 'easymde/dist/easymde.min.css';
+import { useRouter } from 'next/navigation';
 
 // Dynamically import SimpleMDE to avoid SSR issues
 const SimpleMDE = dynamic(() => import('react-simplemde-editor'), { ssr: false });
@@ -26,7 +27,11 @@ export default function BlogEditor({ post, onSave, isSubmitting = false }: BlogE
     tags: post?.tags?.join(', ') || '',
     published: post?.published || false,
     featured: post?.featured || false,
+    image_url: post?.image_url || '',
+    youtube_url: post?.youtube_url || '',
   });
+
+  const router = useRouter();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value, type } = e.target;
@@ -57,6 +62,8 @@ export default function BlogEditor({ post, onSave, isSubmitting = false }: BlogE
       tags,
       published: formData.published,
       featured: formData.featured,
+      image_url: formData.image_url,
+      youtube_url: formData.youtube_url,
     });
   };
 
@@ -146,6 +153,34 @@ export default function BlogEditor({ post, onSave, isSubmitting = false }: BlogE
         </div>
 
         <div>
+          <label htmlFor="imageUrl" className="block text-sm font-medium text-gray-700 dark:text-gray-200">
+            Image URL
+          </label>
+          <input
+            type="text"
+            id="imageUrl"
+            name="image_url"
+            value={formData.image_url}
+            onChange={handleChange}
+            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-800 dark:border-gray-600 dark:text-white"
+          />
+        </div>
+
+        <div>
+          <label htmlFor="youtubeUrl" className="block text-sm font-medium text-gray-700 dark:text-gray-200">
+            YouTube URL
+          </label>
+          <input
+            type="text"
+            id="youtubeUrl"
+            name="youtube_url"
+            value={formData.youtube_url}
+            onChange={handleChange}
+            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-800 dark:border-gray-600 dark:text-white"
+          />
+        </div>
+
+        <div>
           <label htmlFor="category" className="block text-sm font-medium text-gray-900 dark:text-white">
             Category
           </label>
@@ -210,9 +245,16 @@ export default function BlogEditor({ post, onSave, isSubmitting = false }: BlogE
 
       <div className="flex justify-end">
         <button
+          type="button"
+          onClick={() => router.back()}
+          className="rounded-md bg-gray-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-gray-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-600"
+        >
+          Cancel
+        </button>
+        <button
           type="submit"
           disabled={isSubmitting}
-          className={`rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 ${
+          className={`ml-4 rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 ${
             isSubmitting && 'opacity-50 cursor-not-allowed'
           }`}
         >

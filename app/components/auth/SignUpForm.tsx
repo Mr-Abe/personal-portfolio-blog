@@ -1,7 +1,8 @@
 'use client';
 
-import React, { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '@/app/lib/auth/AuthContext';
+import { useRouter } from 'next/navigation';
 
 export default function SignUpForm() {
   const [formData, setFormData] = useState({
@@ -12,7 +13,8 @@ export default function SignUpForm() {
     fullName: '',
   });
   const [passwordError, setPasswordError] = useState('');
-  const { signUp, error } = useAuth();
+  const { signUp, error, loading } = useAuth();
+  const router = useRouter();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -34,10 +36,10 @@ export default function SignUpForm() {
     }
 
     // Validate password strength
-    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/;
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_])[a-zA-Z\d\W_]{8,}$/;
     if (!passwordRegex.test(formData.password)) {
       setPasswordError(
-        'Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, and one number'
+        'Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, one number, and one special character'
       );
       return;
     }
@@ -47,6 +49,20 @@ export default function SignUpForm() {
       full_name: formData.fullName,
     });
   };
+
+  useEffect(() => {
+    // Clear form and redirect after successful sign-up
+    if (!loading && !error) {
+      setFormData({
+        email: '',
+        password: '',
+        confirmPassword: '',
+        username: '',
+        fullName: '',
+      });
+      router.push('/'); // Redirect to the homepage
+    }
+  }, [loading, error, router]);
 
   return (
     <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
@@ -153,7 +169,8 @@ export default function SignUpForm() {
           <div>
             <button
               type="submit"
-              className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+              disabled={loading}
+              className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:opacity-50"
             >
               Sign up
             </button>

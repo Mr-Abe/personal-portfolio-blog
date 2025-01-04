@@ -4,6 +4,7 @@ import React from 'react';
 import Link from 'next/link';
 import { useAuth } from '@/app/lib/auth/AuthContext';
 import { BlogPost } from '@/app/lib/types';
+import Image from 'next/image';
 
 interface BlogListProps {
   posts: BlogPost[];
@@ -17,6 +18,18 @@ export default function BlogList({ posts, showAuthor = true }: BlogListProps) {
     <div className="space-y-16">
       {posts.map((post) => (
         <article key={post.id} className="flex max-w-xl flex-col items-start">
+          {post.image_url && (
+            <div className="relative w-full">
+              <Image
+                src={post.image_url}
+                alt={post.title}
+                width={800}
+                height={450}
+                className="aspect-[16/9] w-full rounded-2xl bg-gray-100 object-cover dark:bg-gray-800"
+              />
+              <div className="absolute inset-0 rounded-2xl ring-1 ring-inset ring-gray-900/10 dark:ring-white/10" />
+            </div>
+          )}
           <div className="flex items-center gap-x-4 text-xs">
             <time dateTime={post.created_at} className="text-gray-500">
               {new Date(post.created_at).toLocaleDateString('en-US', {
@@ -46,10 +59,12 @@ export default function BlogList({ posts, showAuthor = true }: BlogListProps) {
             <div className="relative mt-8 flex items-center gap-x-4">
               <div className="h-10 w-10 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
                 {post.author.avatar_url ? (
-                  <img
+                  <Image
                     src={post.author.avatar_url}
                     alt={post.author.full_name || post.author.username || ''}
                     className="h-10 w-10 rounded-full"
+                    width={40}
+                    height={40}
                   />
                 ) : (
                   <span className="text-lg font-medium text-gray-600 dark:text-gray-300">

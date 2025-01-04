@@ -27,6 +27,8 @@ export interface BlogPost {
   tags?: string[];
   created_at: string;
   updated_at: string;
+  image_url: string | null;
+  youtube_url: string | null;
 }
 
 export interface Project {
@@ -34,15 +36,16 @@ export interface Project {
   title: string;
   slug: string;
   description: string;
-  content?: string;
-  image_url?: string;
-  github_url?: string;
-  demo_url?: string;
+  content: string | null;
+  image_url: string | null;
+  github_url: string | null;
+  demo_url: string | null;
   technologies: string[];
   featured: boolean;
-  category?: string;
+  category: string | null;
   created_at: string;
   updated_at: string;
+  published: boolean;
 }
 
 export interface ContactMessage {

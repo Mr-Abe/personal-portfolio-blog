@@ -73,7 +73,7 @@ Streamlining clinical documentation with artificial intelligence.
 ];
 
 export async function seedProjects() {
-  const supabase = createClient();
+  const supabase = await createClient();
 
   try {
     const { data, error } = await supabase.from('projects').insert(exampleProjects).select();

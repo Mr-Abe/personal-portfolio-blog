@@ -18,7 +18,7 @@ const navigation = [
 
 export default function Navigation() {
   const pathname = usePathname();
-  const { user, signOut } = useAuth();
+  const { user, signOut, isAdmin } = useAuth();
 
   return (
     <Disclosure as="nav" className="bg-white shadow-sm dark:bg-gray-800">
@@ -71,14 +71,18 @@ export default function Navigation() {
                       <Menu.Items className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none dark:bg-gray-700">
                         <Menu.Item>
                           {({ active }) => (
-                            <Link
-                              href="/profile"
-                              className={`${
-                                active ? 'bg-gray-100 dark:bg-gray-600' : ''
-                              } block px-4 py-2 text-sm text-gray-700 dark:text-gray-200`}
-                            >
-                              Your Profile
-                            </Link>
+                            <>
+                            {isAdmin && (
+                              <Link
+                                href="/admin"
+                                className={`${
+                                  active ? 'bg-gray-100 dark:bg-gray-600' : ''
+                                } block px-4 py-2 text-sm text-gray-700 dark:text-gray-200`}
+                              >
+                                Admin
+                              </Link>
+                            )}
+                            </>
                           )}
                         </Menu.Item>
                         <Menu.Item>
@@ -175,15 +179,17 @@ export default function Navigation() {
                   </div>
                 </div>
                 <div className="mt-3 space-y-1">
+                  {isAdmin && (
+                    <Disclosure.Button
+                      as={Link}
+                      href="/admin"
+                      className="block px-4 py-2 text-base font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-800 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-white"                    
+                    >
+                      Admin
+                    </Disclosure.Button>
+                  )}                  
                   <Disclosure.Button
-                    as={Link}
-                    href="/profile"
-                    className="block px-4 py-2 text-base font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-800 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-white"
-                  >
-                    Your Profile
-                  </Disclosure.Button>
-                  <Disclosure.Button
-                    onClick={() => signOut()}
+                    onClick={() => signOut()}                    
                     className="block px-4 py-2 text-base font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-800 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-white"
                   >
                     Sign out

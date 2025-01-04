@@ -1,46 +1,29 @@
-import { createClient } from '../lib/supabase/server';
+'use server';
+
+import { createClient } from '@/app/lib/supabase/server';
+import { revalidatePath } from 'next/cache';
 
 export async function getComments() {
-  const supabase = createClient();
+  const supabase = await createClient();
+  const { data, error } = await supabase.from('comments').select('*');
 
-  try {
-    const { data, error } = await supabase
-      .from('comments')
-      .select('*')
-      .order('created_at', { ascending: false });
-
-    if (error) {
-      console.error('Error fetching comments:', error);
-      return { success: false, error: error.message };
-    }
-
-    return { success: true, data };
-  } catch (error) {
-    console.error('Error fetching comments:', error);
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : 'Failed to fetch comments',
-    };
+  if (error) {
+    console.error('Error getting comments:', error);
+    return { success: false, error: error.message };
   }
+
+  return { success: true, data };
 }
 
 export async function deleteComment(id: string) {
-  const supabase = createClient();
+  const supabase = await createClient();
+  const { error } = await supabase.from('comments').delete().eq('id', id);
 
-  try {
-    const { error } = await supabase.from('comments').delete().eq('id', id);
-
-    if (error) {
-      console.error('Error deleting comment:', error);
-      return { success: false, error: error.message };
-    }
-
-    return { success: true };
-  } catch (error) {
+  if (error) {
     console.error('Error deleting comment:', error);
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : 'Failed to delete comment',
-    };
+    return { success: false, error: error.message };
   }
+
+  revalidatePath('/admin/comments');
+  return { success: true };
 } 
